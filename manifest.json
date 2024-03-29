@@ -1,0 +1,16 @@
+{
+  "name": "DescriptionReview",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "description": "PRのDescriptionをレビューする",
+  "permissions": ["storage", "unlimitedStorage", "activeTab", "scripting"],
+  "content_scripts": [{
+    "matches": ["https://github.com/*/*/pull/*"],
+    "js": [
+      "js/getPR.js"
+    ]
+  }],
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
+}
