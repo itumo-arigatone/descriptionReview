@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       chrome.storage.local.get('prData', function(prData) {
-        let prDescription = prData.prDescription;
-        console.log(data.apiKey);
+        let prDescription = prData.prData;
+        console.log(prData.prData);
+        document.getElementsByClassName('loading')[0].style = "display:block";
 
         fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
           },
           body: JSON.stringify({
             messages: [
-              { role: "system", content: "githubのPullRequestの説明文の評価をして修正点を指摘してください。" },
+              { role: "system", content: "Please point out the following aspects of the github PullRequest description. Please make sure that the evaluation criteria include the following: purpose, what was done, what was not done, bug description, how the bug was resolved, and what should be shared with the team. Please let us know if there is any other information you would like us to review. Please answer in Japanese." },
               { role: "user", content: prDescription}
             ],
             model: "gpt-3.5-turbo",
@@ -32,11 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
           })
         }).then(response => response.json())
           .then(response_data => {
+            document.getElementsByClassName('loading')[0].style = "display:none";
             console.log(response_data);
             if (response_data.error) {
               document.getElementById('prDescription').textContent = response_data.error.message;
             } else {
-              document.getElementById('prDescription').textContent = response_data.choices[0].text;
+              document.getElementById('prDescription').textContent = response_data.choices[0].message.content;
             }
           });
       });
@@ -51,6 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   chrome.storage.local.get('prDescription', function(data) {
-    document.getElementById('prDescription').textContent = 'revirew ressult';
+    document.getElementById('prDescription').textContent = 'click start review button to get review result.';
   });
 });
